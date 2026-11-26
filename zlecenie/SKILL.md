@@ -140,7 +140,8 @@ je jednym zdaniem i idź dalej.
 
 Przeczytaj `references/modele.md` i wybierz rolę z „Drabiny ról”, a z niej: model, poziom myślenia, doradcę, tryb oraz to, czy praca idzie
 w jednej rozmowie, czy w dwóch (diagnoza i plan osobno, wykonanie osobno). Przeczytaj `references/goal.md`,
-zanim wskażesz `/goal`.
+zanim wskażesz `/goal`. Gdy polecenie zleca czytanie dużej ilości tekstu albo wykonanie według opisu ze
+sprawdzeniem poleceniem, przeczytaj `references/gemini.md`: taką część może zrobić Gemini bez limitu Claude.
 
 Wybór wynika z czterech cech zadania opisanych w `references/modele.md` i z dziennika wyników, a nie
 z wrażenia, że zadanie „wymaga osądu”. Gdy podobne zadania kończyły się w dzienniku bez wyniku na danym

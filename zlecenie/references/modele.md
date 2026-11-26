@@ -82,7 +82,7 @@ aktualizujący się system”). Rolę wyznaczają cztery cechy zadania z tabeli 
 
 | Rola | Kiedy | Model dziś | Doradca | Tryb | Na czym stoi (data, wiersze dziennika) |
 | --- | --- | --- | --- | --- | --- |
-| Czytanie | odczyt, jedno sprawdzenie, przeczytanie zapisów rozmów; obejrzenie jednego obrazu | pomocnik Sonnet 5.5; obraz: Haiku 5.5 | brak | — | założenie z 25.11; kalibracja 26.11 użyła dwóch pomocników Sonnet do zapisów rozmów (ok. 0,37 mln tokenów razem) |
+| Czytanie | odczyt, jedno sprawdzenie, przeczytanie zapisów rozmów; obejrzenie jednego obrazu | pomocnik Sonnet 5.5; obraz: Haiku 5.5; kandydat od 26.11.2026: Gemini 4 Hydrogen high przez `scripts/agy_zlec.py` przy czytaniu dużej ilości tekstu i wykonaniu według opisu ze sprawdzeniem poleceniem (`references/gemini.md`) | brak | — | założenie z 25.11; kalibracja 26.11 użyła dwóch pomocników Sonnet do zapisów rozmów (ok. 0,37 mln tokenów razem); próba 26.11 (zlecenie 21): Sonnet i Hydrogen po 3 z 3, Hydrogen bez limitu Claude |
 | Wykonanie według opisu | rodzaj „wykonanie wedlug opisu”, także z „+ oceniane okiem”: pismo, publikacja, slajdy z gotowej treści | Opus 5.5 medium; high tylko z podanym powodem przy krótkim piśmie | brak; `/advisor fable` tylko przy ocenie okiem z gotowym planem z rozmowy 1 | auto; planowania, gdy coś wychodzi na zewnątrz | 26.11: 9 z 9 osiągniętych (1, 4, 5, 6, 11, 13, 14, 15, 16) |
 | Budowa | rodzaj „budowa z podzadaniami” albo „niejasna droga” ze sprawdzalnym końcem (tabela cech: koniec sprawdzalny, droga nieznana) | Opus 5.5 high kieruje, pomocnicy Sonnet (czytanie) i Opus (kod) | brak | planowania na początku | założenie; 26.11 brak zamkniętych wierszy (17, 19, 20 w toku) |
 | Diagnoza i plan | koniec oceniany okiem albo osądem, albo podejście stanęło na złym planie (rodzaj „niejasna droga” albo „po nieudanych podejsciach”) | Fable 5.2 high; medium, gdy użytkownik prowadzi rozmowę na bieżąco | brak | planowania, osobna rozmowa | 26.11: 2 z 3 osiągnięte (9, 10; 2 nie, z braku wzoru) |
@@ -172,6 +172,14 @@ startem) nie liczy się do żadnej roli. Wiersze 7, 8, 17, 18, 19, 20 są w toku
   przy każdym kroku (25.11: od 47% do 100%). Krótsza rozmowa oszczędza więcej niż tańszy model.
 - **`/goal`:** jedyna próba (14) zadziałała dopiero wpisana ręcznie; wklejona i połączona z `/advisor` nie.
   Potwierdza zasadę z kroku 7.
+
+## Gemini 4 przez agy (decyzja autora z 26.11.2026)
+
+Próba autora na prawdziwych planach i zadaniach: Gemini 4 Hydrogen zaliczył czytanie i wykonanie według opisu
+ze sprawdzeniem poleceniem tak samo jak Sonnet, bez zużycia limitu Claude, więc jest kandydatem w roli
+„Czytanie”. Recenzji planu Gemini nie dostaje: drugi recenzent dokładał mało trafnych wad. Regulamin
+Antigravity zabrania łączenia konta z innymi agentami; zapasem jest klucz Gemini API. Szczegóły:
+`references/gemini.md`.
 
 ## Doradca
 
