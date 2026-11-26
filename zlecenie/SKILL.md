@@ -188,7 +188,7 @@ które zostały, z tym, na co każdy czeka. Bez bloku i bez polecenia.
 
 **Zlecać.** Jedno zdanie werdyktu, najwyżej cztery wiersze historii, potem etykiety i linie do wklejenia.
 
-Etykiety użytkownik ustawia ręcznie w nowej rozmowie, zanim cokolwiek wklei (jego decyzja z 26.11.2026). Podajesz
+Etykiety użytkownik ustawia ręcznie w nowej rozmowie, zanim cokolwiek wklei (decyzja autora z 26.11.2026). Podajesz
 je zawsze, także gdy pokrywają się z jego ustawieniami domyślnymi:
 
 ~~~
@@ -293,7 +293,7 @@ zamknięte wiersze od ostatniej kalibracji, popraw umiejętność na podstawie p
    gdzie użytkownik poprawiał kierunek i jakimi słowami, gdzie rozmowa stanęła, czy sprawdzenie końcowe
    faktycznie zostało uruchomione. Zużycie każdej rozmowy liczy
    `dziennik.py zuzycie --rozmowa <plik.jsonl>`, a nie meldunek pomocnika. Stan zleceń bez wyniku sprawdzasz
-   też w późniejszych rozmowach tego projektu, zanim zapytasz użytkownika (25.11.2026 odpowiedział na to pytanie
+   też w późniejszych rozmowach tego projektu, zanim zapytasz użytkownika (25.11.2026 autor odpowiedział na to pytanie
    „sprawdź sobie status”, a odpowiedź stała w rozmowie o godzinę późniejszej).
 3. Każdą poprawkę użytkownika przypisz do przyczyny w poleceniu: brakujący fakt, zła wstawka, zły układ, zły
    katalog. Zmień plik umiejętności, który tę przyczynę usuwa, i dopisz datę oraz zdarzenie jednym zdaniem.
