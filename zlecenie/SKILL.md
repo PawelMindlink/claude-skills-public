@@ -138,7 +138,7 @@ je jednym zdaniem i idź dalej.
 
 ### 5. Układ wykonania
 
-Przeczytaj `references/modele.md` i wybierz: model, poziom myślenia, doradcę, tryb oraz to, czy praca idzie
+Przeczytaj `references/modele.md` i wybierz rolę z „Drabiny ról”, a z niej: model, poziom myślenia, doradcę, tryb oraz to, czy praca idzie
 w jednej rozmowie, czy w dwóch (diagnoza i plan osobno, wykonanie osobno). Przeczytaj `references/goal.md`,
 zanim wskażesz `/goal`.
 
@@ -157,14 +157,22 @@ Polecenie pisze się dla czytelnika, który nie zna tej rozmowy: pełne ścieżk
 „jak ustaliliśmy”, powód przy każdej regule. Ton jest spokojny, bez wersalików i bez „MUSISZ”: nowe modele
 reagują na krzyk nadgorliwością. Ostatnim akapitem jest zawsze wstawka „Zapis wyniku”: przed oddaniem
 zakładasz wiersz w dzienniku programem `scripts/dziennik.py start` i wpisujesz jego numer do polecenia.
+`--rodzaj` to rodzaj główny z kroku 3 (wykonanie wedlug opisu, budowa z podzadaniami, niejasna droga, po
+nieudanych podejsciach), przy ocenie okiem z dopiskiem „ + oceniane okiem”; program odrzuca inne wartości,
+bo 26.11.2026 wolny tekst dał 16 rodzajów na 20 wierszy i `podsumowanie` niczego nie porównywało.
+Gdy pasuje kilka rodzajów, wpisujesz ten, który wyznacza rolę w `references/modele.md`, w kolejności: po
+nieudanych podejsciach, niejasna droga, budowa z podzadaniami, wykonanie wedlug opisu. Ostrzeżenie o długości
+liczy cały plik, więc przy dołączonym tekście źródłowym sprawdzasz `len()` bez niego i ostrzeżenie pomijasz,
+gdy reszta mieści się w progu.
 
 Gdy polecenie przekracza około 2500 znaków albo praca idzie przez `/goal`, zapisz pełną treść w pliku
 `ZLECENIE-<temat>.md` w katalogu pamięci projektu (jego ścieżka stoi w poleceniach systemowych rozmowy,
 w sekcji o pamięci; gdy jej tam nie ma, zapisz plik w katalogu projektu) i dopisz
 linię do `MEMORY.md`:
 `- [Zlecenie](ZLECENIE-<temat>.md) — <cel w kilku słowach>; uruchomione <RRRR-MM-DD>.`
-Polecenie do wklejenia jest wtedy krótkie i wskazuje ten plik pełną ścieżką. Zanim oddasz odpowiedź,
-sprawdź, że plik istnieje dokładnie pod ścieżką wpisaną w poleceniu.
+Polecenie do wklejenia jest wtedy krótkie i wskazuje ten plik pełną ścieżką. Wiersz w dzienniku zakładasz
+wtedy z `--plik <ta ścieżka>`: program odmawia, gdy pliku pod nią nie ma, i ostrzega, gdy plik przekracza
+progi długości z następnego akapitu.
 
 Plik zlecenia w chwili oddania ma najwyżej około 4000 znaków przy wykonaniu według opisu i około 7000 przy
 pozostałych rodzajach, nie licząc dołączonego tekstu źródłowego (policz `len()` w Pythonie). Nadmiar
@@ -300,7 +308,9 @@ zamknięte wiersze od ostatniej kalibracji, popraw umiejętność na podstawie p
 4. Sprawdź w zapisach rozmów, czy po wpisanym `/goal ` i wklejonym warunku program wypisał „Goal set”.
    Gdy dwa razy z rzędu nie wypisał, zgłoś to użytkownikowi i oddawaj zwykły prompt bez celu.
 5. Progi przejścia szczebel wyżej i drabinę w `references/modele.md` zmieniaj dopiero przy dziesięciu
-   zamkniętych wierszach; wcześniej to za mało danych.
+   zamkniętych wierszach; wcześniej to za mało danych. Zmieniasz wtedy tylko kolumnę „Model dziś” w „Drabinie
+   ról”, z datą i numerami wierszy. Nowy model wprowadzasz regułą przyjęcia z tego samego pliku: kandydat
+   w rolach poprzednika, decyzja po trzech zamkniętych wierszach (użytkownik, 26.11.2026).
 
 Kalibrację rób w nowej rozmowie, nie w tej, która układała polecenia.
 

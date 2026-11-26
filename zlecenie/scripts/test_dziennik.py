@@ -22,7 +22,7 @@ def uruchom(*argi, srodowisko):
 
 
 def zacznij(env):
-    return uruchom("start", "--projekt", "P", "--zadanie", "Z", "--rodzaj", "R", "--model", "m",
+    return uruchom("start", "--projekt", "P", "--zadanie", "Z", "--rodzaj", "wykonanie wedlug opisu", "--model", "m",
                    "--poziom", "l", srodowisko=env)
 
 
@@ -94,7 +94,7 @@ def test_rownolegle_starty_dostaja_rozne_numery(tmp_path):
     env = {**{k: v for k, v in os.environ.items() if k != "CLAUDE_CODE_SESSION_ID"},
            "ZLECENIA_DZIENNIK": str(tmp_path / "d.csv")}
     procesy = [subprocess.Popen([sys.executable, "-X", "utf8", str(SKRYPT), "start", "--projekt", "P",
-                                 "--zadanie", f"Z{i}", "--rodzaj", "R", "--model", "m", "--poziom", "l"],
+                                 "--zadanie", f"Z{i}", "--rodzaj", "wykonanie wedlug opisu", "--model", "m", "--poziom", "l"],
                                 stdout=subprocess.PIPE, text=True, env=env) for i in range(8)]
     numery = sorted(int(p.communicate()[0]) for p in procesy)
     assert numery == list(range(1, 9))
@@ -104,9 +104,82 @@ def test_rownolegle_starty_dostaja_rozne_numery(tmp_path):
 def test_koniec_bez_tokenow_wpisuje_policzone(tmp_path):
     rozmowa = przygotuj(tmp_path)
     env = {"ZLECENIA_DZIENNIK": str(tmp_path / "d.csv")}
-    uruchom("start", "--projekt", "P", "--zadanie", "Z", "--rodzaj", "R", "--model", "m", "--poziom", "l",
+    uruchom("start", "--projekt", "P", "--zadanie", "Z", "--rodzaj", "wykonanie wedlug opisu", "--model", "m", "--poziom", "l",
             srodowisko=env)
     w = uruchom("koniec", "--id", "1", "--wynik", "osiagniety", "--dowod", "x", "--rozmowa", str(rozmowa),
                 srodowisko=env)
     assert w.returncode == 0, w.stderr
     assert ";3725;" in (tmp_path / "d.csv").read_text(encoding="utf-8-sig")
+
+
+def start_z(tmp_path, *dodatkowe, rodzaj="wykonanie wedlug opisu"):
+    env = {"ZLECENIA_DZIENNIK": str(tmp_path / "d.csv")}
+    return uruchom("start", "--projekt", "P", "--zadanie", "Z", "--rodzaj", rodzaj, "--model", "m",
+                   "--poziom", "l", *dodatkowe, srodowisko=env)
+
+
+def plik_zlecenia(tmp_path, znakow):
+    # Litera ą zajmuje dwa bajty w UTF-8: próg liczy znaki, nie bajty.
+    plik = tmp_path / "ZLECENIE-test.md"
+    plik.write_text("ą" * znakow, encoding="utf-8")
+    return plik
+
+
+def liczba_wierszy(tmp_path):
+    d = tmp_path / "d.csv"
+    return len(d.read_text(encoding="utf-8-sig").splitlines()) - 1 if d.exists() else 0
+
+
+def test_rodzaj_spoza_listy_odrzucony_bez_wiersza(tmp_path):
+    # 26.11.2026: wolny tekst dał 16 wartości na 20 wierszy i podsumowanie nie porównywało układów.
+    w = start_z(tmp_path, rodzaj="przeglad kodu")
+    assert w.returncode != 0
+    assert "budowa z podzadaniami" in w.stderr and "po nieudanych podejsciach" in w.stderr
+    assert liczba_wierszy(tmp_path) == 0
+
+
+def test_rodzaj_z_dopiskiem_oceniane_okiem_przyjety(tmp_path):
+    w = start_z(tmp_path, rodzaj="niejasna droga + oceniane okiem")
+    assert w.returncode == 0, w.stderr
+    assert w.stdout.strip() == "1"
+    assert ";niejasna droga + oceniane okiem;" in (tmp_path / "d.csv").read_text(encoding="utf-8-sig")
+
+
+def test_brak_pliku_zlecenia_odrzucony_bez_wiersza(tmp_path):
+    w = start_z(tmp_path, "--plik", str(tmp_path / "ZLECENIE-nie-ma.md"))
+    assert w.returncode != 0
+    assert "Nie ma pliku zlecenia" in w.stderr and "ZLECENIE-nie-ma.md" in w.stderr
+    assert liczba_wierszy(tmp_path) == 0
+
+
+def test_wykonanie_ponad_4000_znakow_ostrzega_ale_zapisuje(tmp_path):
+    w = start_z(tmp_path, "--plik", str(plik_zlecenia(tmp_path, 4001)),
+                rodzaj="wykonanie wedlug opisu + oceniane okiem")
+    assert w.returncode == 0, w.stderr
+    assert w.stdout.strip() == "1"
+    assert "4001" in w.stderr and "4000" in w.stderr and "Co już wiadomo" in w.stderr
+    assert liczba_wierszy(tmp_path) == 1
+
+
+def test_inny_rodzaj_ponad_7000_znakow_ostrzega_ale_zapisuje(tmp_path):
+    w = start_z(tmp_path, "--plik", str(plik_zlecenia(tmp_path, 7001)), rodzaj="budowa z podzadaniami")
+    assert w.returncode == 0, w.stderr
+    assert w.stdout.strip() == "1"
+    assert "7001" in w.stderr and "7000" in w.stderr
+    assert liczba_wierszy(tmp_path) == 1
+
+
+def test_inny_rodzaj_ponizej_7000_bez_ostrzezenia(tmp_path):
+    # 5000 znaków przekracza próg wykonania, ale nie próg pozostałych rodzajów.
+    w = start_z(tmp_path, "--plik", str(plik_zlecenia(tmp_path, 5000)), rodzaj="niejasna droga")
+    assert w.returncode == 0, w.stderr
+    assert w.stderr == ""
+    assert liczba_wierszy(tmp_path) == 1
+
+
+def test_wykonanie_w_normie_bez_ostrzezenia(tmp_path):
+    # 4000 znaków to 8000 bajtów: liczy się len() treści, nie rozmiar pliku.
+    w = start_z(tmp_path, "--plik", str(plik_zlecenia(tmp_path, 4000)))
+    assert w.returncode == 0, w.stderr
+    assert w.stderr == ""
+    assert w.stdout.strip() == "1"

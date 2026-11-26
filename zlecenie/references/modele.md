@@ -1,7 +1,8 @@
 # Dobór modelu, poziomu myślenia, doradcy i trybu
 
-Stan na 25.11.2026. Modele i ceny zmieniają się co kilka miesięcy: gdy ten plik ma więcej niż trzy miesiące
-albo pojawił się nowy model, przeczytaj strony z sekcji „Źródła” i popraw tabelę, zanim jej użyjesz.
+Stan na 26.11.2026. Modele i ceny zmieniają się co kilka miesięcy: gdy ten plik ma więcej niż trzy miesiące
+albo pojawił się nowy model, przeczytaj strony z sekcji „Źródła”, a nowy model wprowadź regułą przyjęcia
+z sekcji „Drabina ról”, zamiast przepisywać tabele.
 
 ## Zasada
 
@@ -22,10 +23,10 @@ Ustalasz je przed wyborem, każdą jako „tak” albo „nie”, na podstawie p
 
 | Cechy | Układ |
 | --- | --- |
-| Koniec sprawdzalny, droga znana, błąd odwracalny | Sonnet 5.5 medium, gdy praca jest mechaniczna; w pozostałych przypadkach Opus 5.5 medium. Tryb auto. |
-| Koniec sprawdzalny, droga znana, błąd nieodwracalny | Opus 5.5 medium, tryb planowania, lista zgód. |
-| Koniec sprawdzalny, droga nieznana | Opus 5.5 high, tryb planowania. |
-| Koniec oceniany okiem albo osądem, albo droga nieznana i podejście stanęło na złym planie | Dwie rozmowy: Fable 5.2 high planuje, Opus 5.5 medium z doradcą Fable wykonuje. |
+| Koniec sprawdzalny, droga znana, błąd odwracalny | Rola „Wykonanie według opisu” (dziś Opus 5.5 medium). Tryb auto. |
+| Koniec sprawdzalny, droga znana, błąd nieodwracalny | Rola „Wykonanie według opisu”, tryb planowania, lista zgód. |
+| Koniec sprawdzalny, droga nieznana | Rola „Budowa” (dziś Opus 5.5 high), tryb planowania. |
+| Koniec oceniany okiem albo osądem, albo droga nieznana i podejście stanęło na złym planie | Dwie rozmowy: rola „Diagnoza i plan” planuje, rola „Wykonanie według opisu” z doradcą wykonuje. |
 | Podejście stanęło na wykonaniu | Jeden szczebel wyżej niż model, który pracował poprzednio. |
 | Podejście stanęło na zgodach | Ten sam układ co poprzednio; zmieniają się zasady zgód. |
 | Podejście stanęło na granicy zewnętrznej | Nie zlecasz; zmienia się cel. |
@@ -33,8 +34,8 @@ Ustalasz je przed wyborem, każdą jako „tak” albo „nie”, na podstawie p
 
 ## Kiedy model „nie daje rady” — próg przejścia szczebel wyżej
 
-Szczeble: Sonnet 5.5 medium → Opus 5.5 medium → Opus 5.5 high → Opus 5.5 medium z doradcą Fable →
-Fable 5.2 high. Modelu i poziomu myślenia rozmowa nie zmieni sobie sama: robi to tylko użytkownik poleceniem
+Szczeble (modele według „Drabiny ról”, stan 26.11.2026): Sonnet 5.5 medium → Opus 5.5 medium → Opus 5.5 high →
+Opus 5.5 medium z doradcą Fable → Fable 5.2 high. Modelu i poziomu myślenia rozmowa nie zmieni sobie sama: robi to tylko użytkownik poleceniem
 `/model` albo `/effort`. Dlatego rozmowa wykonująca zatrzymuje się, pisze użytkownikowi gotowe polecenie do
 wpisania (na przykład `/effort high`) i powód, a po jego wpisaniu pracuje dalej. Robi to, gdy zajdzie
 jedno z trzech zdarzeń:
@@ -73,17 +74,44 @@ Pola wyniku:
 Ten plik jest jedyną miarą, czy umiejętność działa: odsetek zleceń z wynikiem `osiagniety`, tokeny na
 osiągnięty wynik i liczba poprawek użytkownika, liczone osobno dla każdego układu.
 
-## Drabina w skrócie
+## Drabina ról
 
-| Zadanie | Model i poziom | Doradca | Tryb |
-| --- | --- | --- | --- |
-| Odczyt, jedno sprawdzenie | pomocnik na Sonnecie albo na Haiku, od razu | brak | — |
-| Wykonanie według dokładnego opisu, praca mechaniczna | Sonnet 5.5 medium; Opus 5.5 low, gdy opis ma luki | brak | auto |
-| Zwykła praca | Opus 5.5 medium | brak | auto; planowania, gdy zmiana dotyka wielu plików |
-| Trudniejsza albo dłuższa, droga znana | Opus 5.5 high | brak | planowania na początku |
-| Koniec oceniany okiem albo podejście stanęło na złym planie — rozmowa 1: diagnoza i plan | Fable 5.2 high | brak | planowania |
-| Ta sama praca — rozmowa 2: wykonanie według planu | Opus 5.5 medium, pomocnicy na Sonnecie | `/advisor fable` | auto |
-| Każdy krok wymaga osądu: strategia, kierunek, rozmowa z użytkownikiem | Fable 5.2 medium; high przy pracy bez nadzoru | brak | planowania |
+Reguły tej umiejętności mówią o rolach, a nie o nazwach modeli. Nazwa modelu stoi tylko w kolumnie „Model dziś”,
+więc nowy model zmienia jeden wiersz tej tabeli, a nie reguły (użytkownik, 26.11.2026: „To musi być elastyczny,
+aktualizujący się system”). Rolę wyznaczają cztery cechy zadania z tabeli wyżej; rodzaj w dzienniku (`dziennik.py start --rodzaj`) pozwala potem porównać wyniki.
+
+| Rola | Kiedy | Model dziś | Doradca | Tryb | Na czym stoi (data, wiersze dziennika) |
+| --- | --- | --- | --- | --- | --- |
+| Czytanie | odczyt, jedno sprawdzenie, przeczytanie zapisów rozmów; obejrzenie jednego obrazu | pomocnik Sonnet 5.5; obraz: Haiku 5.5 | brak | — | założenie z 25.11; kalibracja 26.11 użyła dwóch pomocników Sonnet do zapisów rozmów (ok. 0,37 mln tokenów razem) |
+| Wykonanie według opisu | rodzaj „wykonanie wedlug opisu”, także z „+ oceniane okiem”: pismo, publikacja, slajdy z gotowej treści | Opus 5.5 medium; high tylko z podanym powodem przy krótkim piśmie | brak; `/advisor fable` tylko przy ocenie okiem z gotowym planem z rozmowy 1 | auto; planowania, gdy coś wychodzi na zewnątrz | 26.11: 9 z 9 osiągniętych (1, 4, 5, 6, 11, 13, 14, 15, 16) |
+| Budowa | rodzaj „budowa z podzadaniami” albo „niejasna droga” ze sprawdzalnym końcem (tabela cech: koniec sprawdzalny, droga nieznana) | Opus 5.5 high kieruje, pomocnicy Sonnet (czytanie) i Opus (kod) | brak | planowania na początku | założenie; 26.11 brak zamkniętych wierszy (17, 19, 20 w toku) |
+| Diagnoza i plan | koniec oceniany okiem albo osądem, albo podejście stanęło na złym planie (rodzaj „niejasna droga” albo „po nieudanych podejsciach”) | Fable 5.2 high; medium, gdy użytkownik prowadzi rozmowę na bieżąco | brak | planowania, osobna rozmowa | 26.11: 2 z 3 osiągnięte (9, 10; 2 nie, z braku wzoru) |
+| Doradca | długa praca z rutynowymi turami, w której o wyniku decyduje plan | Fable 5.2 | — | — | 26.11: 2 z 2 osiągnięte (14, 16), ale najdroższe (średnio 94 mln tokenów) |
+
+Wiersz „Model dziś” zmienia tylko kalibracja, według reguły przyjęcia nowego modelu albo według danych
+z dziennika, i zawsze dopisuje datę oraz numery wierszy w ostatniej kolumnie.
+
+## Reguła przyjęcia nowego modelu (przyjęta przez użytkownika 26.11.2026)
+
+1. **Kto i kiedy.** Gdy nowy model pojawi się na liście `/model` (sprawdzasz przy kroku 5, a także gdy użytkownik
+   o nim wspomni), staje się kandydatem do ról poprzednika z tej samej rodziny: nowy Opus do ról Opusa,
+   nowy Fable do ról Fable, nowy Sonnet do ról Sonneta. Pogłoska bez modelu na liście niczego nie zmienia.
+2. **Co zmienia się w drabinie.** W kolumnie „Model dziś” dopisujesz „kandydat: <nazwa> od <data>” obok
+   poprzednika. Od tej chwili umiejętność wskazuje kandydata w tej roli, a `dziennik.py start --model`
+   zapisuje jego nazwę (np. `opus-5-6`).
+3. **Jak trafia do dziennika i kiedy zapada decyzja.** Po trzech zamkniętych wierszach kandydata w danej roli
+   kalibracja porównuje w `dziennik.py podsumowanie` jego odsetek osiągniętych, tokeny na osiągnięty wynik
+   i poprawki użytkownika z poprzednikiem w tej samej roli. Nie gorzej na żadnej z trzech miar → kandydat zostaje
+   jedynym modelem w roli; gorzej → wraca poprzednik. Decyzję wpisujesz z datą i numerami wierszy.
+4. **Granica bezpieczeństwa.** Gdy kandydat dwa razy z rzędu zakończy się wynikiem `nieosiagniety` z przyczyny
+   „wykonanie” (krok 2 w `SKILL.md`), wraca poprzednik od razu, bez czekania na trzeci wiersz.
+
+Przykład: Opus 5.6 (26.11.2026 tylko zapowiedź, na liście `/model` go nie ma). Gdy się
+pojawi, wiersze „Wykonanie według opisu” i „Budowa” dostają dopisek „kandydat: Opus 5.6”. Po trzech
+zamkniętych zleceniach wykonania porównujesz go z Opusem 5.5 medium, który ma 9 z 9 osiągniętych.
+
+Ta sama reguła służy do sprawdzenia szczebla niżej: Sonnet 5.5 jako kandydat do wykonania według opisu przy
+pracy mechanicznej. Do 26.11.2026 nikt go w tej roli nie sprawdził na zleceniu użytkownika.
 
 Reguły, których tabela nie pokazuje:
 
@@ -118,19 +146,32 @@ Reguły, których tabela nie pokazuje:
 - **Zapis zużycia.** Zużycie każdego zlecenia liczy `dziennik.py` z zapisu rozmowy. Po dziesięciu
   zamkniętych wierszach drabinę da się oprzeć na liczbach użytkownika, a nie producenta.
 
-## Co sugerują dane autora (kalibracja 25.11.2026, 5 zamkniętych wierszy; zastąpi je Twój dziennik)
+## Co sugerują dane autora (kalibracja 26.11.2026, 14 zamkniętych wierszy; zastąpi je Twój dziennik)
 
-Drabiny i progów nie zmieniam, bo zamkniętych wierszy jest mniej niż dziesięć. Zapisuję tylko kierunek:
+Pole „rodzaj” ujednolicone 26.11 do rodzajów z kroku 3 (kopia sprzed zmiany:
+`~/.claude/zlecenia-wyniki.przed-kalibracja-2026-11-26.csv`). Tokeny wierszy 14, 15 i 16
+przeliczone `dziennik.py zuzycie` na rozmowach, które uruchomiły `koniec`. Wiersz 12 (przerwany przed
+startem) nie liczy się do żadnej roli. Wiersze 7, 8, 17, 18, 19, 20 są w toku.
 
-- **Wykonanie według opisu i krótkie pismo** (Opus 5.5 medium albo high): 3 z 3 osiągnięte, od 9,5 do
-  92 mln tokenów. Układ wygląda na trafny; tokeny zależały od pomocników, nie od modelu rozmowy.
-- **Zadania oceniane okiem:** 0 z 2 osiągnięte, i na Opusie 5.5 high (ekran budżetu, 45 mln), i na Fable
-  5.2 high (panel z wynikami, 17 mln, czwarte odrzucenie z rzędu). W obu przypadkach brakowało faktu
-  wejściowego: co w starym rozwiązaniu ma zostać i jaki prawdziwy wzór się podoba. Mocniejszy model tego
-  nie naprawił, więc przy kolejnym odrzuceniu najpierw szukaj brakującego wzoru, a dopiero potem szczebla
-  wyżej.
-- **Rozmowa główna** zużywała od 47% (panel) do 100% (wersjonowanie) tokenów zlecenia, prawie w całości
-  na odczyt z pamięci podręcznej przy każdym kroku. Krótsza rozmowa oszczędza więcej niż tańszy model.
+- **Wykonanie według opisu: 9 z 9 osiągniętych** (1, 4, 5, 6, 11, 13, 14, 15, 16). Opus 5.5 medium bez
+  doradcy: 5 z 5, średnio 31 mln tokenów, poprawki średnio 1. Opus 5.5 high: 2 z 2 (pismo 12 mln, slajdy
+  42 mln i 3 poprawki), czyli wyższy poziom nie dał lepszego wyniku. Model w tej roli zostaje.
+- **Doradca Fable przy wykonaniu: 2 z 2, ale średnio 94 mln tokenów** (14: 76 mln, 16: 113 mln) wobec 42 mln
+  slajdów (13) bez doradcy przy ocenie okiem. Dwa wiersze nie pozwalają oddzielić kosztu doradcy od kosztu
+  pomocników, więc doradca zostaje tylko przy ocenie okiem z planem z rozmowy 1, a nie jako ustawienie domyślne.
+- **Diagnoza i plan na Fable 5.2: 2 z 3** (9 i 10 osiągnięte; 2 nieosiągnięte). Opus 5.5 high przy niejasnej
+  drodze z oceną okiem: 0 z 1 (3, ekran budżetu). Obie porażki miały tę samą przyczynę: brak wzoru albo
+  tego, co ma zostać ze starego rozwiązania. Przy ocenie okiem najpierw zdobywasz wzór, potem szczebel.
+- **Budowa z podzadaniami: brak danych.** Wiersz „Budowa” w drabinie pozostaje założeniem.
+- **Przyczyny poprawek użytkownika** (zapisy rozmów 26.11): brakujący fakt (9: wzór, 10: cel, 13: pochodzenie dań,
+  16: przewaga produktu), zły kanał (17: Teams zamiast maila), żargon (18: „g(t)”, 8: „nic nie rozumiem”).
+  Zły model ani zły katalog nie wystąpił ani razu. Najwięcej da więc krok 4 (pytania o fakty), a nie model.
+- **Progi przejścia szczebel wyżej (2, 2, połowa) bez zmian:** żadne zamknięte zlecenie ich nie uruchomiło
+  (jedyne pole `przejscie_wyzej` to limit 5 godzin w 11 i decyzja użytkownika w 12), więc nie ma czego mierzyć.
+- **Rozmowa główna** zużywa większość tokenów zlecenia, prawie w całości na odczyt z pamięci podręcznej
+  przy każdym kroku (25.11: od 47% do 100%). Krótsza rozmowa oszczędza więcej niż tańszy model.
+- **`/goal`:** jedyna próba (14) zadziałała dopiero wpisana ręcznie; wklejona i połączona z `/advisor` nie.
+  Potwierdza zasadę z kroku 7.
 
 ## Doradca
 

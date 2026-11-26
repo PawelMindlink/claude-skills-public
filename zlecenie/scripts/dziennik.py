@@ -2,8 +2,15 @@
 
 Użycie (zawsze z `python3 -X utf8`):
   dziennik.py start --projekt P --zadanie Z --rodzaj R --model M --poziom L
-                    [--doradca brak] [--tryb auto] [--forma polecenie]
+                    [--doradca brak] [--tryb auto] [--forma polecenie] [--plik ZLECENIE-*.md]
       Dopisuje wiersz ze stanem „w_toku” i wypisuje jego numer.
+      --rodzaj to jeden z RODZAJE: „wykonanie wedlug opisu”, „budowa z podzadaniami”, „niejasna droga”,
+      „po nieudanych podejsciach”, opcjonalnie z dopiskiem „ + oceniane okiem”. Inna wartość kończy się
+      błędem bez wiersza, bo 26.11.2026 wolny tekst dał 16 wartości na 20 wierszy i `podsumowanie`
+      nie porównywało układów.
+      --plik wskazuje plik zlecenia; gdy go nie ma, błąd bez wiersza. Gdy ma ponad 4000 znaków przy
+      „wykonanie wedlug opisu” albo ponad 7000 przy pozostałych, ostrzega na stderr, a wiersz i tak powstaje;
+      próg z SKILL.md krok 6 (26.11.2026, zewnętrzny tester: pliki po ok. 9 KB niezależnie od zadania).
   dziennik.py koniec --id N --wynik osiagniety|nieosiagniety|przerwany --dowod "..."
                      [--tury 0] [--tokeny N] [--rozmowa plik.jsonl] [--poprawki 0] [--przejscie ""]
       Zamyka wiersz o numerze N. Bez --tokeny liczy zużycie sam z zapisu rozmowy (jak `zuzycie`).
@@ -41,6 +48,31 @@ from pathlib import Path
 POLA = ["id", "data", "projekt", "zadanie", "rodzaj", "model", "poziom", "doradca", "tryb", "forma",
         "wynik", "dowod", "tury", "tokeny", "poprawki_uzytkownika", "przejscie_wyzej", "data_konca"]
 WYNIKI = ("osiagniety", "nieosiagniety", "przerwany")
+RODZAJE = ("wykonanie wedlug opisu", "budowa z podzadaniami", "niejasna droga", "po nieudanych podejsciach")
+DOPISEK = " + oceniane okiem"
+PROG_WYKONANIA, PROG_POZOSTALYCH = 4000, 7000
+
+
+def rodzaj_dozwolony(rodzaj: str) -> bool:
+    """Tylko rodzaj z RODZAJE, z dopiskiem DOPISEK albo bez: 26.11.2026 wolny tekst dał 16 wartości na
+    20 wierszy, więc `podsumowanie` nie porównywało układów."""
+    glowny = rodzaj[: -len(DOPISEK)] if rodzaj.endswith(DOPISEK) else rodzaj
+    return glowny in RODZAJE
+
+
+def sprawdz_plik(plik: str, rodzaj: str) -> bool:
+    """Fałsz, gdy pliku zlecenia nie ma; ostrzeżenie o długości według progu z SKILL.md krok 6
+    (26.11.2026, zewnętrzny tester: pliki po ok. 9 KB niezależnie od zadania)."""
+    sciezka_pliku = Path(plik)
+    if not sciezka_pliku.is_file():
+        print(f"Nie ma pliku zlecenia {sciezka_pliku}; wiersz nie powstał.", file=sys.stderr)
+        return False
+    znakow = len(sciezka_pliku.read_text(encoding="utf-8"))
+    prog = PROG_WYKONANIA if rodzaj.startswith(RODZAJE[0]) else PROG_POZOSTALYCH
+    if znakow > prog:
+        print(f"Uwaga: plik zlecenia ma {znakow} znaków, próg dla tego rodzaju to {prog}. "
+              "Skróć »Co już wiadomo«: fakt do przeczytania jednym odczytem zastąp ścieżką.", file=sys.stderr)
+    return True
 
 
 def sciezka() -> Path:
@@ -95,6 +127,13 @@ def zapisz(wiersze: list[dict]) -> None:
 
 
 def start(a: argparse.Namespace) -> int:
+    if not rodzaj_dozwolony(a.rodzaj):
+        print(f"Rodzaj „{a.rodzaj}” spoza listy; wiersz nie powstał. Dozwolone: "
+              + ", ".join(f"„{r}”" for r in RODZAJE) + f", każdy także z dopiskiem „{DOPISEK}”.",
+              file=sys.stderr)
+        return 1
+    if a.plik and not sprawdz_plik(a.plik, a.rodzaj):
+        return 1
     with blokada():
         wiersze = wczytaj()
         numer = max((int(w["id"]) for w in wiersze if w["id"].isdigit()), default=0) + 1
@@ -217,6 +256,7 @@ def main() -> int:
     s.add_argument("--doradca", default="brak")
     s.add_argument("--tryb", default="auto")
     s.add_argument("--forma", default="polecenie")
+    s.add_argument("--plik", default=None)
     s.set_defaults(f=start)
     k = sub.add_parser("koniec")
     k.add_argument("--id", type=int, required=True)

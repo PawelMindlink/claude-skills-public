@@ -187,7 +187,7 @@ powstało, czym to sprawdziłeś, czego nie zrobiłeś.
 Zawsze, jako ostatni akapit polecenia. Zanim oddasz polecenie, sam zakładasz wiersz zlecenia i wpisujesz
 jego numer do polecenia:
 
-`python3 -X utf8 ~/.claude/skills/zlecenie/scripts/dziennik.py start --projekt "<projekt>" --zadanie "<zadanie>" --rodzaj "<rodzaj>" --model <model> --poziom <poziom> --doradca <brak albo fable> --tryb <auto albo planowania> --forma <polecenie albo goal>`
+`python3 -X utf8 ~/.claude/skills/zlecenie/scripts/dziennik.py start --projekt "<projekt>" --zadanie "<zadanie>" --rodzaj "<rodzaj główny z kroku 3, opcjonalnie + oceniane okiem>" --model <model> --poziom <poziom> --doradca <brak albo fable> --tryb <auto albo planowania> --forma <polecenie albo goal> [--plik "<pełna ścieżka ZLECENIE-*.md, gdy powstał>"]`
 
 ~~~
 Na końcu pracy, także gdy ją przerywasz, zapisz wynik tego zlecenia poleceniem:
