@@ -7,9 +7,9 @@ Stan na 26.11.2026. Opis na podstawie prób autora; przed użyciem sprawdź na w
 Tylko pomocnik od czytania dużej ilości tekstu albo od wykonania według opisu, gdy wynik sprawdza
 polecenie (testy, porównanie z kluczem). W próbie autora Gemini 4 Hydrogen zaliczył takie zadania tak
 samo jak pomocnik Sonnet, bez zużycia limitu Claude. Jedno sprawdzenie albo odczyt jednego pliku robisz
-sam, bo wywołanie Gemini trwa od pół minuty do kilku minut. Recenzji planu Gemini nie dostaje: w próbie
-drugi recenzent dokładał mało wad, a w planach, w których poprawki wynikały z brakujących faktów, żaden
-recenzent ich nie znalazł.
+sam, bo wywołanie Gemini trwa od pół minuty do kilku minut. Sprawdzenie planu może zrobić Gemini 4 Neon
+zamiast pomocnika Opus: w próbie autora trafił tyle samo późniejszych wad, nie zmyślał w planie bez wad
+i nie zużył limitu Claude. Przegląd planu nie zastępuje jednak pytań o fakty przed pracą.
 
 ## Kto i jak wywołuje
 
