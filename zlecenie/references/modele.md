@@ -5,8 +5,8 @@ albo pojawił się nowy model, przeczytaj strony z sekcji „Źródła” i popr
 
 ## Zasada
 
-Ograniczeniem użytkownika jest tygodniowy limit Fable, a nie cena tokenu: 16.11.2026 pomocnicy stanęli właśnie na
-tym limicie. Dlatego Fable pracuje tylko tam, gdzie rozstrzyga się wynik (diagnoza, plan, osąd), a rutynę
+Ograniczeniem autora tej umiejętności jest tygodniowy limit Fable, a nie cena tokenu: jego pomocnicy
+stanęli właśnie na tym limicie. Sprawdź, co ogranicza Ciebie, i popraw ten akapit. Dlatego Fable pracuje tylko tam, gdzie rozstrzyga się wynik (diagnoza, plan, osąd), a rutynę
 wykonują tańsze modele. Poziom myślenia jest tańszą dźwignią niż zmiana modelu, więc najpierw ruszasz
 poziom.
 
@@ -17,7 +17,8 @@ Ustalasz je przed wyborem, każdą jako „tak” albo „nie”, na podstawie p
 1. **Koniec da się sprawdzić** poleceniem albo liczbą widoczną w rozmowie.
 2. **Droga jest znana:** istnieje spisany plan z krokami albo zadanie jest jednym krokiem.
 3. **Błąd jest odwracalny:** nic nie wychodzi na zewnątrz i nic nie ginie.
-4. **Poprzednie podejścia:** ile stanęło i w jakiej klasie przyczyny (krok „Historia” w `SKILL.md`).
+4. **Poprzednie podejścia:** ile stanęło i w jakiej klasie przyczyny (krok „Historia” w `SKILL.md`);
+   zadanie odłożone świadomie liczy się jak nowe.
 
 | Cechy | Układ |
 | --- | --- |
@@ -28,6 +29,7 @@ Ustalasz je przed wyborem, każdą jako „tak” albo „nie”, na podstawie p
 | Podejście stanęło na wykonaniu | Jeden szczebel wyżej niż model, który pracował poprzednio. |
 | Podejście stanęło na zgodach | Ten sam układ co poprzednio; zmieniają się zasady zgód. |
 | Podejście stanęło na granicy zewnętrznej | Nie zlecasz; zmienia się cel. |
+| Zadanie odłożone świadomie, nikt go nie próbował | Układ według pozostałych cech, jak dla nowego zadania; gdy powód odłożenia trwa, nie zlecasz. |
 
 ## Kiedy model „nie daje rady” — próg przejścia szczebel wyżej
 
@@ -38,7 +40,7 @@ wpisania (na przykład `/effort high`) i powód, a po jego wpisaniu pracuje dale
 jedno z trzech zdarzeń:
 
 - to samo sprawdzenie nie przechodzi po dwóch próbach naprawy;
-- Użytkownik dwa razy odrzucił wynik z tego samego powodu;
+- użytkownik dwa razy odrzucił wynik z tego samego powodu;
 - minęła granica tur z polecenia, a spełniona jest mniej niż połowa punktów „Gotowe, gdy”.
 
 Bez żadnego z tych zdarzeń model zostaje. Liczby 2, 2 i połowa są założeniem startowym z 25.11.2026,
@@ -62,7 +64,9 @@ Pola wyniku:
 - `wynik`: `osiagniety`, `nieosiagniety` albo `przerwany` — według sprawdzenia z „Gotowe, gdy”, nie według
   opinii.
 - `dowod`: polecenie albo liczba, która to pokazuje.
-- `tokeny`: odczyt z `/usage` na końcu rozmowy.
+- `tokeny`: suma z zapisu rozmowy i jej pomocników, razem z odczytem z pamięci podręcznej. Liczy ją sam
+  `dziennik.py koniec` (albo `dziennik.py zuzycie`); model nie czyta `/usage`, a meldunki pomocników
+  pomijają odczyt z pamięci podręcznej, więc obie drogi zaniżały wynik kilkadziesiąt razy (25.11.2026).
 - `poprawki_uzytkownika`: ile razy użytkownik musiał poprawić kierunek albo odrzucił wynik.
 - `przejscie_wyzej`: puste albo zdarzenie, które wymusiło mocniejszy układ.
 
@@ -103,7 +107,7 @@ Reguły, których tabela nie pokazuje:
   pismo o skutkach prawnych, z prawnikiem jako recenzentem, to droga znana i koniec sprawdzalny, czyli
   Opus 5.5; poziom high zamiast medium wolno dać z podanym powodem, bo przy krótkim zadaniu kosztuje
   niewiele. 25.11.2026 wskazałem do takiego pisma Fable 5.2 high z samego wrażenia, że „każdy krok wymaga
-  osądu”, i użytkownik słusznie to zakwestionował. Fable dostaje zadanie dopiero wtedy, gdy nie ma ani planu,
+  osądu”, i autor słusznie to zakwestionował. Fable dostaje zadanie dopiero wtedy, gdy nie ma ani planu,
   ani taniego sprawdzianu.
 - **Pomocnicy nie dziedziczą Fable.** W poleceniu podajesz model każdego pomocnika: Sonnet do czytania
   i wykonania według opisu, Opus do budowy i poprawek w kodzie, Haiku do obejrzenia jednego obrazu.
@@ -111,9 +115,22 @@ Reguły, których tabela nie pokazuje:
 - **Dwie rozmowy zamiast zmiany modelu w trakcie.** Zmiana modelu unieważnia zapamiętany kontekst rozmowy
   i cała historia jest czytana od nowa po pełnej cenie. Plan z rozmowy 1 trafia do pliku, a rozmowa 2
   zaczyna od niego.
-- **Zapis zużycia.** Przy pierwszym zadaniu w układzie dwóch rozmów polecenie każe na końcu odczytać
-  `/usage` i wpisać wynik do sekcji „Wynik” w pliku zlecenia. Po trzech takich zapisach drabinę da się
-  oprzeć na liczbach użytkownika, a nie producenta.
+- **Zapis zużycia.** Zużycie każdego zlecenia liczy `dziennik.py` z zapisu rozmowy. Po dziesięciu
+  zamkniętych wierszach drabinę da się oprzeć na liczbach użytkownika, a nie producenta.
+
+## Co sugerują dane autora (kalibracja 25.11.2026, 5 zamkniętych wierszy; zastąpi je Twój dziennik)
+
+Drabiny i progów nie zmieniam, bo zamkniętych wierszy jest mniej niż dziesięć. Zapisuję tylko kierunek:
+
+- **Wykonanie według opisu i krótkie pismo** (Opus 5.5 medium albo high): 3 z 3 osiągnięte, od 9,5 do
+  92 mln tokenów. Układ wygląda na trafny; tokeny zależały od pomocników, nie od modelu rozmowy.
+- **Zadania oceniane okiem:** 0 z 2 osiągnięte, i na Opusie 5.5 high (ekran budżetu, 45 mln), i na Fable
+  5.2 high (panel z wynikami, 17 mln, czwarte odrzucenie z rzędu). W obu przypadkach brakowało faktu
+  wejściowego: co w starym rozwiązaniu ma zostać i jaki prawdziwy wzór się podoba. Mocniejszy model tego
+  nie naprawił, więc przy kolejnym odrzuceniu najpierw szukaj brakującego wzoru, a dopiero potem szczebla
+  wyżej.
+- **Rozmowa główna** zużywała od 47% (panel) do 100% (wersjonowanie) tokenów zlecenia, prawie w całości
+  na odczyt z pamięci podręcznej przy każdym kroku. Krótsza rozmowa oszczędza więcej niż tańszy model.
 
 ## Doradca
 
@@ -130,18 +147,17 @@ polecenie `/advisor fable`, wyłącza `/advisor off`.
   podejścia i przed ogłoszeniem końca”. Nie ma ustawienia, które to wymusza albo ogranicza.
 - **Ustawienie doradcy zostaje na stałe** i według dokumentacji dziedziczą je także pomocnicy. Rozmowa
   włączona z `/advisor fable` zostawia więc doradcę Fable każdej następnej rozmowie i każdemu pomocnikowi
-  na Sonnecie, co po cichu zjada limit Fable. Dlatego w krokach uruchomienia obok `/advisor fable` zawsze
-  stoi „po zakończeniu pracy wpisz `/advisor off`”, a polecenie przypomina o tym w ostatnim zdaniu.
+  na Sonnecie, co po cichu zjada limit Fable. Dlatego polecenie z linią `/advisor fable` zawiera wstawkę
+  „Doradca”, która każe rozmowie przypomnieć na końcu o `/advisor off` (od 26.11.2026 oddanie nie ma
+  osobnych kroków uruchomienia, tylko etykiety i wiadomości do wklejenia).
   W terminalu to samo daje `claude --advisor fable`, które działa tylko na jedną rozmowę.
-- Sprawdzone 25.11.2026: polecenie `/advisor` działa na koncie użytkownika i przyjmuje `fable`, `opus`,
-  `sonnet`, `off`. Fable 5.2 jako doradca wymaga według dokumentacji wersji 2.1.321. Użytkownik pracuje
-  w rozszerzeniu VS Code, które 25.11.2026 miało wersję 2.1.331 (katalog
-  `~/.vscode/extensions/anthropic.claude-code-*`), więc doradca Fable 5.2 jest tam dostępny.
-  Osobny program w terminalu (`claude --version`) miał wtedy 2.1.302 i nazwa `fable` wskazywała w nim
-  Fable 5.1; dotyczy to tylko pracy z terminala i automatów. Wersję sprawdzaj tam, gdzie zlecenie ruszy:
-  25.11.2026 sprawdziłem terminal i błędnie napisałem użytkownikowi, że musi aktualizować program.
+- Polecenie `/advisor` przyjmuje `fable`, `opus`, `sonnet`, `off` (sprawdził autor 25.11.2026). Fable 5.2
+  jako doradca wymaga według dokumentacji odpowiednio nowej wersji Claude Code. Rozszerzenie VS Code
+  i osobny program w terminalu (`claude --version`) mogą mieć różne wersje, a w starszej nazwa `fable`
+  wskazuje starszy model. Wersję sprawdzaj tam, gdzie zlecenie ruszy: autor sprawdził 25.11.2026 terminal
+  zamiast rozszerzenia i błędnie uznał, że trzeba aktualizować program.
 - **Włączenie doradcy nie mieści się w prompcie.** Włącza go tylko użytkownik poleceniem `/advisor fable` albo
-  ustawieniem, dlatego stoi w nagłówku bloku. W prompcie stoi natomiast zdanie, kiedy model ma do niego
+  ustawieniem, dlatego jest osobną wiadomością do wklejenia. W prompcie stoi natomiast zdanie, kiedy model ma do niego
   sięgać (wstawka „Doradca” w `szablon-polecenia.md`), bo częstość sięgania ustawia się tylko słowami.
 
 ## Tryb
@@ -151,8 +167,8 @@ polecenie `/advisor fable`, wyłącza `/advisor off`.
   więc do badania służą pomocnicy czytający, którzy oddają tekst.
 - **Tryb auto**, gdy zadanie jest dokładnie opisane, odwracalne i ma sprawdzenie. Tryb auto zdejmuje pytania
   o zgodę na pojedyncze narzędzia, a `/goal` zdejmuje potrzebę popychania każdej tury; uzupełniają się.
-- Trybu ani poziomu myślenia Claude nie ustawi sam. Robi to użytkownik, dlatego stoją w bloku „Ustawienia
-  rozmowy”, a nie w treści polecenia.
+- Trybu ani poziomu myślenia Claude nie ustawi sam. Robi to użytkownik, dlatego są etykietami, które ustawia
+  ręcznie przed wklejeniem (`SKILL.md`, krok 7, od 26.11.2026), a nie zdaniami w treści polecenia.
 
 ## Jak pisać polecenie pod wybrany model
 

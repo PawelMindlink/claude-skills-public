@@ -5,8 +5,17 @@ Użycie (zawsze z `python3 -X utf8`):
                     [--doradca brak] [--tryb auto] [--forma polecenie]
       Dopisuje wiersz ze stanem „w_toku” i wypisuje jego numer.
   dziennik.py koniec --id N --wynik osiagniety|nieosiagniety|przerwany --dowod "..."
-                     [--tury 0] [--tokeny 0] [--poprawki 0] [--przejscie ""]
-      Zamyka wiersz o numerze N.
+                     [--tury 0] [--tokeny N] [--rozmowa plik.jsonl] [--poprawki 0] [--przejscie ""]
+      Zamyka wiersz o numerze N. Bez --tokeny liczy zużycie sam z zapisu rozmowy (jak `zuzycie`).
+      Gdy zapisu rozmowy nie znajdzie, zostawia tokeny puste i mówi to na stderr, zamiast wpisać 0
+      (26.11.2026, uwaga 6 zewnętrznego testera: zera zaniżały średnią w `podsumowanie`).
+  dziennik.py zuzycie [--rozmowa plik.jsonl]
+      Tokeny rozmowy i jej pomocników z zapisu Claude Code, razem z odczytem pamięci podręcznej.
+      Bez --rozmowa bierze zapis bieżącej rozmowy po zmiennej CLAUDE_CODE_SESSION_ID, którą Claude Code
+      ustawia w każdym poleceniu. Do 26.11.2026 brał najnowszy zapis ze wszystkich projektów i przy
+      równoległych rozmowach liczył cudzą (wiersze 12 i 15 dziennika: po 20,71 mln z tej samej rozmowy).
+      Dodane 25.11.2026: model nie czyta /usage, więc zlecenia wpisywały 0 albo sumę z meldunków
+      pomocników (SEO: 1,8 mln wpisane, 92 mln w zapisie).
   dziennik.py wiszace
       Wypisuje zlecenia, które ruszyły i nie zapisały wyniku.
   dziennik.py podsumowanie
@@ -14,14 +23,19 @@ Użycie (zawsze z `python3 -X utf8`):
 
 Plik: ~/.claude/zlecenia-wyniki.csv (średniki, UTF-8 z BOM, żeby otwierał się
 w Excelu). Zapis idzie przez moduł csv, więc średnik albo cudzysłów w treści pola nie psuje wiersza.
+Odczyt i zapis idą pod blokadą pliku `<dziennik>.lock` (26.11.2026, uwaga 7 zewnętrznego testera: trzy
+równoległe przebiegi pisały do jednego pliku). Blokada starsza niż minuta jest uznawana za porzuconą.
 """
 from __future__ import annotations
 
 import argparse
 import csv
 import datetime as dt
+import json
 import os
 import sys
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 POLA = ["id", "data", "projekt", "zadanie", "rodzaj", "model", "poziom", "doradca", "tryb", "forma",
@@ -31,6 +45,34 @@ WYNIKI = ("osiagniety", "nieosiagniety", "przerwany")
 
 def sciezka() -> Path:
     return Path(os.environ.get("ZLECENIA_DZIENNIK") or Path.home() / ".claude" / "zlecenia-wyniki.csv")
+
+
+@contextmanager
+def blokada():
+    """Wyłączny dostęp do dziennika; czeka do ZLECENIA_BLOKADA_CZAS sekund (domyślnie 30)."""
+    zamek = Path(str(sciezka()) + ".lock")
+    zamek.parent.mkdir(parents=True, exist_ok=True)
+    termin = time.monotonic() + float(os.environ.get("ZLECENIA_BLOKADA_CZAS") or 30)
+    while True:
+        try:
+            uchwyt = os.open(zamek, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            break
+        except FileExistsError:
+            try:
+                if time.time() - zamek.stat().st_mtime > 60:
+                    zamek.unlink()
+                    continue
+            except FileNotFoundError:
+                continue
+            if time.monotonic() > termin:
+                raise TimeoutError(f"Dziennik {sciezka()} jest zablokowany przez inny przebieg ({zamek}).")
+            time.sleep(0.05)
+    try:
+        os.write(uchwyt, str(os.getpid()).encode())
+        os.close(uchwyt)
+        yield
+    finally:
+        zamek.unlink(missing_ok=True)
 
 
 def wczytaj() -> list[dict]:
@@ -53,27 +95,85 @@ def zapisz(wiersze: list[dict]) -> None:
 
 
 def start(a: argparse.Namespace) -> int:
-    wiersze = wczytaj()
-    numer = max((int(w["id"]) for w in wiersze if w["id"].isdigit()), default=0) + 1
-    wiersze.append({**{p: "" for p in POLA}, "id": str(numer), "data": dt.date.today().isoformat(),
-                    "projekt": a.projekt, "zadanie": a.zadanie, "rodzaj": a.rodzaj, "model": a.model,
-                    "poziom": a.poziom, "doradca": a.doradca, "tryb": a.tryb, "forma": a.forma,
-                    "wynik": "w_toku"})
-    zapisz(wiersze)
+    with blokada():
+        wiersze = wczytaj()
+        numer = max((int(w["id"]) for w in wiersze if w["id"].isdigit()), default=0) + 1
+        wiersze.append({**{p: "" for p in POLA}, "id": str(numer), "data": dt.date.today().isoformat(),
+                        "projekt": a.projekt, "zadanie": a.zadanie, "rodzaj": a.rodzaj, "model": a.model,
+                        "poziom": a.poziom, "doradca": a.doradca, "tryb": a.tryb, "forma": a.forma,
+                        "wynik": "w_toku"})
+        zapisz(wiersze)
     print(numer)
     return 0
 
 
+def tokeny_pliku(plik: Path) -> int:
+    """Suma wejścia, odczytu i zapisu pamięci podręcznej oraz wyjścia; jedna odpowiedź liczona raz."""
+    widziane, razem = set(), 0
+    with plik.open(encoding="utf-8", errors="replace") as f:
+        for linia in f:
+            try:
+                d = json.loads(linia)
+            except ValueError:
+                continue
+            m = d.get("message") if d.get("type") == "assistant" else None
+            u = m.get("usage") if isinstance(m, dict) else None
+            klucz = d.get("requestId") or (m or {}).get("id")
+            if not u or klucz in widziane:
+                continue
+            widziane.add(klucz)
+            razem += sum(u.get(k) or 0 for k in ("input_tokens", "cache_read_input_tokens",
+                                                 "cache_creation_input_tokens", "output_tokens"))
+    return razem
+
+
+def rozmowa_sesji() -> Path | None:
+    """Zapis bieżącej rozmowy: plik o nazwie z CLAUDE_CODE_SESSION_ID w katalogu projektów."""
+    sesja = os.environ.get("CLAUDE_CODE_SESSION_ID")
+    if not sesja:
+        return None
+    katalog = Path(os.environ.get("ZLECENIA_PROJEKTY") or Path.home() / ".claude" / "projects")
+    pliki = list(katalog.glob(f"*/{sesja}.jsonl"))
+    return max(pliki, key=lambda p: p.stat().st_mtime) if pliki else None
+
+
+def policz(rozmowa: str | None) -> tuple[int, int, Path | None]:
+    plik = Path(rozmowa) if rozmowa else rozmowa_sesji()
+    if not plik or not plik.exists():
+        return 0, 0, None
+    pomocnicy = sum(tokeny_pliku(p) for p in plik.with_suffix("").glob("subagents/agent-*.jsonl"))
+    return tokeny_pliku(plik), pomocnicy, plik
+
+
+def zuzycie(a: argparse.Namespace) -> int:
+    glowna, pomocnicy, plik = policz(a.rozmowa)
+    if not plik:
+        print("Nie znalazłem zapisu rozmowy.", file=sys.stderr)
+        return 1
+    print(glowna + pomocnicy)
+    print(f"rozmowa {glowna}, pomocnicy {pomocnicy}, plik {plik}")
+    return 0
+
+
 def koniec(a: argparse.Namespace) -> int:
-    wiersze = wczytaj()
-    for w in wiersze:
-        if w["id"] == str(a.id):
-            w.update(wynik=a.wynik, dowod=a.dowod, tury=str(a.tury), tokeny=str(a.tokeny),
-                     poprawki_uzytkownika=str(a.poprawki), przejscie_wyzej=a.przejscie,
-                     data_konca=dt.date.today().isoformat())
-            zapisz(wiersze)
-            print(f"Zapisano wynik zlecenia {a.id}: {a.wynik}")
-            return 0
+    tokeny = "" if a.tokeny is None else str(a.tokeny)
+    if a.tokeny is None:
+        glowna, pomocnicy, plik = policz(a.rozmowa)
+        if plik:
+            tokeny = str(glowna + pomocnicy)
+        else:
+            print("Uwaga: nie policzyłem tokenów, bo nie znalazłem zapisu tej rozmowy; pole zostaje puste. "
+                  "Podaj --rozmowa <plik.jsonl>, jeśli go znasz.", file=sys.stderr)
+    with blokada():
+        wiersze = wczytaj()
+        for w in wiersze:
+            if w["id"] == str(a.id):
+                w.update(wynik=a.wynik, dowod=a.dowod, tury=str(a.tury), tokeny=tokeny,
+                         poprawki_uzytkownika=str(a.poprawki), przejscie_wyzej=a.przejscie,
+                         data_konca=dt.date.today().isoformat())
+                zapisz(wiersze)
+                print(f"Zapisano wynik zlecenia {a.id}: {a.wynik}")
+                return 0
     print(f"Nie ma zlecenia o numerze {a.id} w {sciezka()}", file=sys.stderr)
     return 1
 
@@ -123,14 +223,22 @@ def main() -> int:
     k.add_argument("--wynik", choices=WYNIKI, required=True)
     k.add_argument("--dowod", required=True)
     k.add_argument("--tury", type=int, default=0)
-    k.add_argument("--tokeny", type=int, default=0)
+    k.add_argument("--tokeny", type=int, default=None)
+    k.add_argument("--rozmowa", default=None)
     k.add_argument("--poprawki", type=int, default=0)
     k.add_argument("--przejscie", default="")
     k.set_defaults(f=koniec)
+    z = sub.add_parser("zuzycie")
+    z.add_argument("--rozmowa", default=None)
+    z.set_defaults(f=zuzycie)
     sub.add_parser("wiszace").set_defaults(f=wiszace)
     sub.add_parser("podsumowanie").set_defaults(f=podsumowanie)
     a = p.parse_args()
-    return a.f(a)
+    try:
+        return a.f(a)
+    except TimeoutError as blad:
+        print(blad, file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

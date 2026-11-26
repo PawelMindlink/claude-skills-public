@@ -1,6 +1,6 @@
 # Kiedy `/goal` i jak pisać warunek
 
-Źródło: https://code.claude.com/docs/en/goal (odczyt 25.11.2026) oraz 19 uruchomień celu w rozmowach użytkownika
+Źródło: https://code.claude.com/docs/en/goal (odczyt 25.11.2026) oraz 19 uruchomień celu w rozmowach autora tej umiejętności
 z okresu 25.10–14.11.2026.
 
 ## Jak to działa
@@ -43,7 +43,7 @@ Zwykłe polecenie wybierasz, gdy:
 
 - **Jeden mierzalny stan końcowy** i **nazwane sprawdzenie**, którego wynik Claude pokazuje w rozmowie:
   „`py -m pytest tests -q` kończy się kodem 0 i wynik jest pokazany w rozmowie”.
-- **Dowody ponumerowane.** Dawne cele użytkownika, które doszły do końca, miały listę „(1)… (2)… pokazane
+- **Dowody ponumerowane.** Dawne cele autora, które doszły do końca, miały listę „(1)… (2)… pokazane
   w rozmowie”.
 - **Granica:** „albo zatrzymaj się po 40 turach i zamelduj, co zostało”.
 - **Ograniczenia, które mają znaczenie:** czego nie wolno zmienić, co czeka na zgodę.
@@ -69,10 +69,18 @@ odpowiedź użytkownika”. Zatrzymaj się po 40 turach i zamelduj, co zostało.
 
 ## Jak użytkownik to uruchamia
 
-- Wpisuje `/goal ` ręcznie i wkleja warunek. W zapisach jego rozmów tylko jedno uruchomienie zostało
-  zapisane jako polecenie; pozostałe, wklejone jako długi tekst razem ze słowem `/goal`, są zapisane jako
-  zwykłe wiadomości. Nie jest potwierdzone, że wtedy cel działał, więc po uruchomieniu użytkownik sprawdza
-  znacznik `◎ /goal active` albo wpisuje samo `/goal`, które pokazuje stan.
+- Audyt 26.11.2026 zapisów rozmów autora (dwa projekty, 25.10–14.11.2026): 19 prób `/goal`.
+  18 to wklejone bloki wielowierszowe, które Claude Code zapisał jako `<pasted_content>` z `/goal`
+  w środku, czyli jako zwykłą wiadomość; po żadnej nie ma komunikatu „Goal set”, więc cel nie ruszył. Jedna próba (13.11) została zapisana jako polecenie, bez znacznika wklejonej
+  treści, ale odrzucił ją limit 4000 znaków. Najmniejszy
+  zawinięty wklejony tekst miał 141 znaków i 5 wierszy; wklejenia jednego wiersza nie znaleziono.
+- 26.11.2026 wklejony sam wiersz `/goal …` (959 znaków, osobna wiadomość) też został zapisany jako
+  wklejona treść, bez „Goal set”. Dlatego użytkownik wpisuje ręcznie `/goal ` ze spacją i wkleja sam warunek,
+  a potem sprawdza, czy program odpisał „Goal set: …”. Samo `/goal` pokazuje stan celu.
+- Potwierdzone 26.11.2026 (jedna z rozmów autora): wpisane ręcznie `/goal ` i wklejony warunek
+  program zapisał jako polecenie i odpisał „Goal set: …”. Wysłane w trakcie pracy modelu trafiło do
+  kolejki i zostało wykonane jako polecenie dopiero po zakończeniu bieżącego ruchu (9 minut później),
+  a nie wstawione jako tekst.
 - Jeden cel na rozmowę. Ten sam cel wklejony do dwóch rozmów daje dwóch wykonawców na tych samych plikach.
 - Tryb auto przed uruchomieniem, bo cel nie zmienia trybu: w trybie ręcznym praca staje na każdej zgodzie.
 - `/goal clear` zatrzymuje. Po `--continue` albo `--resume` cel wraca, a liczniki zaczynają od zera.

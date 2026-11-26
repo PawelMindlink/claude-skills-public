@@ -32,6 +32,9 @@ umiejętności w promptach nie zadziała.
 5. **Limity i ceny modeli** w `zlecenie/references/modele.md`. Plik zakłada, że wąskim gardłem jest
    tygodniowy limit najmocniejszego modelu, a nie cena tokenu. Ceny i wersje są z 23–25 listopada 2026;
    umiejętność sama każe je odświeżyć, gdy plik ma więcej niż trzy miesiące.
+6. **Przykłady z datami.** Reguła z datą i zdarzeniem opisuje przebieg u autora, a nie u Ciebie. Liczby
+   w części „Co sugerują dane autora” w `references/modele.md` zastąpi Twój dziennik po kilku zleceniach,
+   a wersję programu i limity modeli sprawdź u siebie.
 
 ## Jak sprawdzam, czy działa
 
