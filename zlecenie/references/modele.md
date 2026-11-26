@@ -6,8 +6,10 @@ z sekcji „Drabina ról”, zamiast przepisywać tabele.
 
 ## Zasada
 
-Ograniczeniem autora tej umiejętności jest tygodniowy limit Fable, a nie cena tokenu: jego pomocnicy
-stanęli właśnie na tym limicie. Sprawdź, co ogranicza Ciebie, i popraw ten akapit. Dlatego Fable pracuje tylko tam, gdzie rozstrzyga się wynik (diagnoza, plan, osąd), a rutynę
+Ograniczeniem autora tej umiejętności jest tygodniowy limit planu, a nie cena tokenu: jego pomocnicy
+stanęli właśnie na tym limicie. Na planie Max pula jest jedna dla wszystkich modeli, a Fable ciągnie z niej
+szybciej i najwyżej do 50% (https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan,
+odczyt 26.11.2026). Sprawdź, co ogranicza Ciebie, i popraw ten akapit. Dlatego Fable pracuje tylko tam, gdzie rozstrzyga się wynik (diagnoza, plan, osąd), a rutynę
 wykonują tańsze modele. Poziom myślenia jest tańszą dźwignią niż zmiana modelu, więc najpierw ruszasz
 poziom.
 
