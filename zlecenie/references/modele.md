@@ -87,7 +87,7 @@ aktualizujący się system”). Rolę wyznaczają cztery cechy zadania z tabeli 
 | Czytanie | odczyt, jedno sprawdzenie, przeczytanie zapisów rozmów; obejrzenie jednego obrazu | pomocnik Sonnet 5.5; obraz: Haiku 5.5; kandydat od 26.11.2026: Gemini 4 Hydrogen high przez `scripts/agy_zlec.py` przy czytaniu dużej ilości tekstu i wykonaniu według opisu ze sprawdzeniem poleceniem (`references/gemini.md`) | brak | — | założenie z 25.11; kalibracja 26.11 użyła dwóch pomocników Sonnet do zapisów rozmów (ok. 0,37 mln tokenów razem); próba 26.11 (zlecenie 21): Sonnet i Hydrogen po 3 z 3, Hydrogen bez limitu Claude |
 | Wykonanie według opisu | rodzaj „wykonanie wedlug opisu”, także z „+ oceniane okiem”: pismo, publikacja, slajdy z gotowej treści | Opus 5.5 medium; high tylko z podanym powodem przy krótkim piśmie | brak; `/advisor fable` tylko przy ocenie okiem z gotowym planem z rozmowy 1 | auto; planowania, gdy coś wychodzi na zewnątrz | 26.11: 9 z 9 osiągniętych (1, 4, 5, 6, 11, 13, 14, 15, 16) |
 | Budowa | rodzaj „budowa z podzadaniami” albo „niejasna droga” ze sprawdzalnym końcem (tabela cech: koniec sprawdzalny, droga nieznana) | Opus 5.5 high kieruje, pomocnicy Sonnet (czytanie) i Opus (kod); sprawdzenie planu: kandydat Gemini 4 Neon high przez `scripts/agy_zlec.py` od 26.11.2026 | brak | planowania na początku | założenie; 26.11 brak zamkniętych wierszy (17, 19, 20 w toku) |
-| Diagnoza i plan | koniec oceniany okiem albo osądem, albo podejście stanęło na złym planie (rodzaj „niejasna droga” albo „po nieudanych podejsciach”) | Fable 5.2 high; medium, gdy użytkownik prowadzi rozmowę na bieżąco | brak | planowania, osobna rozmowa | 26.11: 2 z 3 osiągnięte (9, 10; 2 nie, z braku wzoru) |
+| Diagnoza i plan | koniec oceniany okiem albo osądem, albo podejście stanęło na złym planie (rodzaj „niejasna droga” albo „po nieudanych podejsciach”) | Fable 5.2 high; medium, gdy użytkownik prowadzi rozmowę na bieżąco; kandydat od 27.11.2026: Gemini 4 Carbon high przez `scripts/agy_zlec.py`, gdy rozmowa główna (Opus) poda mu wszystkie fakty w poleceniu; Fable dopiero po odrzuceniu planu Carbona | brak | planowania, osobna rozmowa | 26.11: 2 z 3 osiągnięte (9, 10; 2 nie, z braku wzoru); 27.11 ślepa próba na 9 i 2: Carbon 5 pkt, Fable 0 (sekcja „Gemini 4 przez agy”) |
 | Doradca | długa praca z rutynowymi turami, w której o wyniku decyduje plan | Fable 5.2 | — | — | 26.11: 2 z 2 osiągnięte (14, 16), ale najdroższe (średnio 94 mln tokenów) |
 
 Wiersz „Model dziś” zmienia tylko kalibracja, według reguły przyjęcia nowego modelu albo według danych
@@ -182,6 +182,9 @@ ze sprawdzeniem poleceniem tak samo jak Sonnet, bez zużycia limitu Claude, wię
 „Czytanie”. Recenzji planu Gemini nie dostaje: drugi recenzent dokładał mało trafnych wad. Regulamin
 Antigravity zabrania łączenia konta z innymi agentami; zapasem jest klucz Gemini API. Szczegóły:
 `references/gemini.md`.
+Gemini 4 Carbon high jest od 27.11.2026 kandydatem w roli „Diagnoza i plan”: w ślepej próbie
+autora na dwóch zleceniach przewidział więcej poprawek zleceniodawcy niż Fable, bo w obu zapytał o wzór.
+Próba jest mała, więc fakty zbiera mu rozmowa główna, a Fable wchodzi po odrzuceniu jego planu.
 
 ## Doradca
 
